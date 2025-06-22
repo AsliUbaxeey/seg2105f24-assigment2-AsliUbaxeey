@@ -127,7 +127,7 @@ public class ClientConsole implements ChatIF
         port = Integer.parseInt(args[1]);
          } 
       catch (NumberFormatException e) { // catch if not number given
-        System.out.println("Invalid port number. Default will be used ");
+        System.out.println("Invalid. Using default port "+ DEFAULT_PORT);
         port = DEFAULT_PORT;
       }
     }

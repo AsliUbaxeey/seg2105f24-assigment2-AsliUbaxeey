@@ -115,7 +115,7 @@ public class ChatClient extends AbstractClient
 	                    clientUI.display("Cannot set host while connected");
 	                   }
 	                   break;
-
+	                }
 	            case "#setport":
 	                if (!isConnected()) {
 	                    if (parts.length >= 2) {
@@ -141,15 +141,16 @@ public class ChatClient extends AbstractClient
 
 	                }
 	                
-	           else {
+	         
 	          try {
 	            sendToServer(message);
 	        } catch (IOException e) {
 	            clientUI.display("Could not send message to server... Terminating client");
 	            quit();
 	        }
-	    }
+	    
 	}
+  }
 
 
   
@@ -169,7 +170,7 @@ public class ChatClient extends AbstractClient
   
 	// connection to the server is closed
 	
-	@override
+	@Override
 	public void connectionClosed() {
 	  clientUI.display("Server has closed the connection. Exiting.");
 	  System.exit(0);
@@ -177,7 +178,7 @@ public class ChatClient extends AbstractClient
 	
 	//exception occurs in the connection
 	 
-	@override
+	@Override
 	public void connectionException(Exception exception) {
 	  clientUI.display("The server has shut down unexpectedly. Exiting.");
 	  System.exit(0);
