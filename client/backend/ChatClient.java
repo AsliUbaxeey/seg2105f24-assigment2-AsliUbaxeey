@@ -62,19 +62,96 @@ public class ChatClient extends AbstractClient
    *
    * @param message The message from the UI.    
    */
-  public void handleMessageFromClientUI(String message)
-  {
-    try
-    {
-      sendToServer(message);
-    }
-    catch(IOException e)
-    {
-      clientUI.display
-        ("Could not send message to server.  Terminating client.");
-      quit();
-    }
-  }
+  
+  public void handleMessageFromClientUI(String message) {
+	    if (message.startsWith("#")) {
+	        String[] parts = message.split(" ");
+	        String command = parts[0];
+
+	        switch (command) {
+	        
+	            case "#quit":
+	                quit();
+	                break;
+
+	            case "#logoff":
+	                if (isConnected()) {
+	                    try {
+	                        closeConnection();
+	                        clientUI.display("Logged off from the server");
+	                     } 
+	                    catch (IOException e) {
+	                        clientUI.display("Error while logging off");
+	                    }
+	                } 
+	                else {
+	                    clientUI.display("You are not connected");
+	                }
+	                break;
+
+	            case "#login":
+	                if (!isConnected()) {
+	                    try {
+	                        openConnection();
+	                        clientUI.display("Connected to server");
+	                      }
+	                    catch (IOException e) {
+	                        clientUI.display("Connection failed");
+	                    }
+	                } 
+	                else {
+	                    clientUI.display("You are already connected");
+	                }
+	                break;
+
+	            case "#sethost":
+	                if (!isConnected()) {
+	                    if (parts.length >= 2) {
+	                        setHost(parts[1]);
+	                        clientUI.display("Host set to: " + getHost());
+	                      } 
+	          
+	                   else {
+	                    clientUI.display("Cannot set host while connected");
+	                   }
+	                   break;
+
+	            case "#setport":
+	                if (!isConnected()) {
+	                    if (parts.length >= 2) {
+	                        try {
+	                            setPort(Integer.parseInt(parts[1]));
+	                            clientUI.display("Port set to: " + getPort());
+	                        } catch (NumberFormatException e) {
+	                            clientUI.display("Invalid port number");
+	                        }
+	                    } 
+	                    else {
+	                    clientUI.display("Cannot set port while connected");
+	                    }
+	                    break;
+	                }
+	            case "#gethost":
+	                clientUI.display("Current host: " + getHost());
+	                break;
+
+	            case "#getport":
+	                clientUI.display("Current port: " + getPort());
+	                break;
+
+	                }
+	                
+	           else {
+	          try {
+	            sendToServer(message);
+	        } catch (IOException e) {
+	            clientUI.display("Could not send message to server... Terminating client");
+	            quit();
+	        }
+	    }
+	}
+
+
   
   /**
    * This method terminates the client.
@@ -92,7 +169,7 @@ public class ChatClient extends AbstractClient
   
 	// connection to the server is closed
 	
-	
+	@override
 	public void connectionClosed() {
 	  clientUI.display("Server has closed the connection. Exiting.");
 	  System.exit(0);
@@ -100,7 +177,7 @@ public class ChatClient extends AbstractClient
 	
 	//exception occurs in the connection
 	 
-	
+	@override
 	public void connectionException(Exception exception) {
 	  clientUI.display("The server has shut down unexpectedly. Exiting.");
 	  System.exit(0);
