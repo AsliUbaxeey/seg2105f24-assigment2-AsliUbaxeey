@@ -1,13 +1,9 @@
-package edu.seg2105.client.ui;
-// This file contains material supporting section 3.7 of the textbook:
-// "Object Oriented Software Engineering" and is issued under the open-source
-// license found at www.lloseng.com 
+package client.ui;
 
-import java.io.*;
+import client.backend.ChatClient;
+import client.common.ChatIF;
+import java.io.IOException;
 import java.util.Scanner;
-
-import edu.seg2105.client.backend.ChatClient;
-import edu.seg2105.client.common.*;
 
 /**
  * This class constructs the UI for a chat client.  It implements the
@@ -117,19 +113,27 @@ public class ClientConsole implements ChatIF
    */
   public static void main(String[] args) 
   {
-    String host = "";
-
-
-    try
-    {
+    String host = "localhost";
+    int port = DEFAULT_PORT;
+ // assume first thing given is host
+    if (args.length >= 1) {
       host = args[0];
     }
-    catch(ArrayIndexOutOfBoundsException e)
-    {
-      host = "localhost";
+
+    // assume second thing given is port
+    if (args.length >= 2) {
+    	
+      try {
+        port = Integer.parseInt(args[1]);
+         } 
+      catch (NumberFormatException e) { // catch if not number given
+        System.out.println("Invalid port number. Default will be used ");
+        port = DEFAULT_PORT;
+      }
     }
-    ClientConsole chat= new ClientConsole(host, DEFAULT_PORT);
-    chat.accept();  //Wait for console data
+
+    ClientConsole chat = new ClientConsole(host, port);
+    chat.accept();
   }
 }
 //End of ConsoleChat class
