@@ -133,6 +133,6 @@ public class ServerConsole implements ChatIF {
         }
 
         ServerConsole serverC = new ServerConsole(port);
-        serverC.accept();  // Start console loop
+        serverC.accept(); 
     }
 }

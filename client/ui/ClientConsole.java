@@ -23,6 +23,7 @@ public class ClientConsole implements ChatIF
    */
   final public static int DEFAULT_PORT = 5555;
   
+  
   //Instance variables **********************************************
   
   /**
@@ -46,12 +47,11 @@ public class ClientConsole implements ChatIF
    * @param host The host to connect to.
    * @param port The port to connect on.
    */
-  public ClientConsole(String host, int port) 
+  public ClientConsole(String loginId,String host, int port) 
   {
     try 
     {
-      client= new ChatClient(host, port, this);
-      
+      client= new ChatClient(loginId,host, port,this);
       
     } 
     catch(IOException exception) 
@@ -111,20 +111,27 @@ public class ClientConsole implements ChatIF
    *
    * @param args[0] The host to connect to.
    */
-  public static void main(String[] args) 
-  {
+  public static void main(String[] args) {
+	String loginId;
     String host = "localhost";
     int port = DEFAULT_PORT;
- // assume first thing given is host
-    if (args.length >= 1) {
-      host = args[0];
+    
+    if (args.length < 1) {
+        System.out.println("ERROR: No login ID specified.. Connection failed.");
+        System.exit(1);
     }
-
-    // assume second thing given is port
+    loginId = args[0];
+    
+ // assume 2nd thing given is host
     if (args.length >= 2) {
+      host = args[1];
+    }
+   
+    // assume 3rd thing given is port
+    if (args.length >= 3) {
     	
       try {
-        port = Integer.parseInt(args[1]);
+        port = Integer.parseInt(args[2]);
          } 
       catch (NumberFormatException e) { // catch if not number given
         System.out.println("Invalid. Using default port "+ DEFAULT_PORT);
@@ -132,7 +139,7 @@ public class ClientConsole implements ChatIF
       }
     }
 
-    ClientConsole chat = new ClientConsole(host, port);
+    ClientConsole chat = new ClientConsole(loginId,host, port);
     chat.accept();
   }
 }

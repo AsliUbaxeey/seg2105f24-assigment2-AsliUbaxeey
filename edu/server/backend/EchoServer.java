@@ -1,4 +1,6 @@
 package edu.server.backend;
+import java.io.IOException;
+
 // This file contains material supporting section 3.7 of the textbook:
 // "Object Oriented Software Engineering" and is issued under the open-source
 // license found at www.lloseng.com 
@@ -45,12 +47,48 @@ public class EchoServer extends AbstractServer
    * @param msg The message received from the client.
    * @param client The connection from which the message originated.
    */
-  public void handleMessageFromClient
-    (Object msg, ConnectionToClient client)
-  {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+  @Override
+  protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
+      String message = msg.toString();
+      System.out.println("Received message: " + message);// debugging cus i dont think ChatClient is calling this method
+      
+      if (message.startsWith("#login")) {
+          if (client.getInfo("loginId") != null) {
+              try {
+                  client.sendToClient("ERROR - Already logged in. Connection will close.");
+                  client.close(); // close connection
+              } catch (IOException e) {
+                  System.out.println("Error closing client: " + e);
+              }
+          } else {
+              String loginId = message.substring(7).trim();
+              client.setInfo("loginId", loginId);
+              System.out.println("Logged in as: " + loginId);
+          }
+          return;
+      }
+
+      // For all other messages
+      String loginId = (String) client.getInfo("loginId");
+
+      if (loginId == null) {
+          try {
+              client.sendToClient("ERROR - Must log in first. Connection will close.");
+              client.close();
+          } catch (IOException e) {
+              System.out.println("Error closing client: " + e);
+          }
+          return;
+      }
+
+      // Send normal messages prefixed with loginId
+      System.out.println(loginId + "> " + message);
+      sendToAllClients(loginId + "> " + message);
   }
+
+
+
+
     
   /**
    * This method overrides the one in the superclass.  Called

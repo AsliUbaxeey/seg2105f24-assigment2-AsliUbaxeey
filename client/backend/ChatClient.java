@@ -22,6 +22,8 @@ public class ChatClient extends AbstractClient
    * the display method in the client.
    */
   ChatIF clientUI; 
+  private String loginId;
+
 
   
   //Constructors ****************************************************
@@ -34,12 +36,14 @@ public class ChatClient extends AbstractClient
    * @param clientUI The interface type variable.
    */
   
-  public ChatClient(String host, int port, ChatIF clientUI) 
+  public ChatClient(String loginId,String host, int port, ChatIF clientUI) 
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
     this.clientUI = clientUI;
+    this.loginId = loginId;
     openConnection();
+    sendToServer("#login " + loginId);
   }
 
   
@@ -88,21 +92,7 @@ public class ChatClient extends AbstractClient
 	                    clientUI.display("You are not connected");
 	                }
 	                break;
-
-	            case "#login":
-	                if (!isConnected()) {
-	                    try {
-	                        openConnection();
-	                        clientUI.display("Connected to server");
-	                      }
-	                    catch (IOException e) {
-	                        clientUI.display("Connection failed");
-	                    }
-	                } 
-	                else {
-	                    clientUI.display("You are already connected");
-	                }
-	                break;
+	                
 
 	            case "#sethost":
 	                if (!isConnected()) {
@@ -140,19 +130,19 @@ public class ChatClient extends AbstractClient
 	                break;
 
 	                }
-	                
-	         
+  			  }    
+	        
 	          try {
 	            sendToServer(message);
 	        } catch (IOException e) {
 	            clientUI.display("Could not send message to server... Terminating client");
 	            quit();
 	        }
-	    
-	}
-  }
+	      }
+     
+  
 
-
+ 
   
   /**
    * This method terminates the client.
@@ -172,7 +162,7 @@ public class ChatClient extends AbstractClient
 	
 	@Override
 	public void connectionClosed() {
-	  clientUI.display("Server has closed the connection. Exiting.");
+	  clientUI.display("Server has closed the connection");
 	  System.exit(0);
 	}
 	
@@ -180,7 +170,7 @@ public class ChatClient extends AbstractClient
 	 
 	@Override
 	public void connectionException(Exception exception) {
-	  clientUI.display("The server has shut down unexpectedly. Exiting.");
+	  clientUI.display("The server has shut down unexpectedly");
 	  System.exit(0);
 	}
 	
