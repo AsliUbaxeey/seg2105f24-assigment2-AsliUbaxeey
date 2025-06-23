@@ -101,7 +101,7 @@ public class ServerConsole implements ChatIF {
                 if (!server.isListening()) {
                     try {
                         server.listen();
-                        display("Server listening...");
+                        
                     } 
                     catch (IOException e) {
                         display("ERROR: Could not start server");

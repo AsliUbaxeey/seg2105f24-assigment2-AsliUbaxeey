@@ -50,38 +50,43 @@ public class EchoServer extends AbstractServer
   @Override
   protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
       String message = msg.toString();
-      System.out.println("Received message: " + message);// debugging cus i dont think ChatClient is calling this method
-      
+     
       if (message.startsWith("#login")) {
           if (client.getInfo("loginId") != null) {
               try {
-                  client.sendToClient("ERROR - Already logged in. Connection will close.");
-                  client.close(); // close connection
-              } catch (IOException e) {
+                  client.sendToClient("ERROR :Already logged in... Connection will close.");
+                  client.close(); 
+              } 
+              catch (IOException e) {
                   System.out.println("Error closing client: " + e);
               }
-          } else {
+          } 
+          else {
               String loginId = message.substring(7).trim();
               client.setInfo("loginId", loginId);
               System.out.println("Logged in as: " + loginId);
+              sendToAllClients(loginId + " has logged on.");
+
           }
           return;
       }
-
+      
+      
       // For all other messages
       String loginId = (String) client.getInfo("loginId");
 
       if (loginId == null) {
           try {
-              client.sendToClient("ERROR - Must log in first. Connection will close.");
+              client.sendToClient("ERROR: Must log in first. Connection will close.");
               client.close();
-          } catch (IOException e) {
+          } 
+          catch (IOException e) {
               System.out.println("Error closing client: " + e);
           }
           return;
       }
-
-      // Send normal messages prefixed with loginId
+      
+      System.out.println("Received Message: " + message + " From "+ loginId);
       System.out.println(loginId + "> " + message);
       sendToAllClients(loginId + "> " + message);
   }
@@ -94,10 +99,10 @@ public class EchoServer extends AbstractServer
    * This method overrides the one in the superclass.  Called
    * when the server starts listening for connections.
    */
+  @Override
   protected void serverStarted()
   {
-    System.out.println
-      ("Server listening for connections on port " + getPort());
+    System.out.println("Server listening for clients on port: "+getPort());
   }
   
   /**
@@ -115,17 +120,35 @@ public class EchoServer extends AbstractServer
   
   @Override
 	protected void clientConnected(ConnectionToClient client) {
-	        System.out.println("Client connected: " + client);
+	  String loginId = (String) client.getInfo("loginId");
+	  System.out.println("A new client has connected to the server");
+	    if (loginId != null) {
+	        System.out.println(loginId + " has connected.");
+	        sendToAllClients(loginId + " has connected.");
+	    }
     }
 
   @Override
     protected void clientDisconnected(ConnectionToClient client) {
-        System.out.println("Client disconnected: " + client);
+	  String loginId = (String) client.getInfo("loginId");
+	    if (loginId != null) {
+	        System.out.println(loginId + " has disconnected.");
+	        sendToAllClients(loginId + " has disconnected.");
+	    } 
+	    else {
+	        System.out.println("A client has disconnected before logging in.");
+	    }
     }
 
   @Override
     protected void clientException(ConnectionToClient client, Throwable exception) {
-        System.out.println("Client connection closed unexpectedly: " + client);
+	  String loginId = (String) client.getInfo("loginId");
+	    if (loginId != null) {
+	        System.out.println("Connection closed with " + loginId );
+	    } 
+	    else {
+	        System.out.println("Connection error with unknown client: " + exception.getMessage());
+	    }
     }
 
 

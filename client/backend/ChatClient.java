@@ -112,7 +112,8 @@ public class ChatClient extends AbstractClient
 	                        try {
 	                            setPort(Integer.parseInt(parts[1]));
 	                            clientUI.display("Port set to: " + getPort());
-	                        } catch (NumberFormatException e) {
+	                        } 
+	                        catch (NumberFormatException e) {
 	                            clientUI.display("Invalid port number");
 	                        }
 	                    } 
